@@ -38,7 +38,9 @@
         <div class="color-btn color-green" onclick="changeColor('green')"></div>
         <div class="color-btn color-yellow" onclick="changeColor('yellow')"></div>
         <div class="color-btn color-black" onclick="changeColor('black')"></div>
-        <div class="eraser-btn" onclick="changeColor('white')">E</div>
+        <div class="eraser-btn" onclick="changeColor('white'); changeEraserSize(5)">E Small</div>
+        <div class="eraser-btn" onclick="changeColor('white'); changeEraserSize(10)">E Medium</div>
+        <div class="eraser-btn" onclick="changeColor('white'); changeEraserSize(20)">E Large</div>
         <button class="shape-btn" onclick="setShape('circle')">⚫</button>
         <button class="shape-btn" onclick="setShape('triangle')">▲</button>
         <button class="shape-btn" onclick="setShape('square')">■</button>
@@ -50,10 +52,15 @@
         let drawing = false;
         let color = 'black';
         let shape = null;
+        let lineWidth = 5;
 
         function changeColor(newColor) {
             color = newColor;
             shape = null;
+        }
+
+        function changeEraserSize(size) {
+            lineWidth = size;
         }
 
         function setShape(newShape) {
@@ -89,7 +96,7 @@
             if (!drawing || shape) return;
             ctx.lineTo(e.offsetX, e.offsetY);
             ctx.strokeStyle = color;
-            ctx.lineWidth = 5;
+            ctx.lineWidth = lineWidth;
             ctx.stroke();
         });
 
