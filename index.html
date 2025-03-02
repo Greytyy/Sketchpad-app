@@ -6,113 +6,95 @@
     <title>Sketchpad App</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+            text-align: center;
         }
         canvas {
-            border: 2px solid black;
-            background-color: white;
+            border: 1px solid black;
+            cursor: crosshair;
         }
         .toolbar {
             margin-bottom: 10px;
         }
-        .color-picker, .eraser, .stamp {
-            cursor: pointer;
+        .color-btn, .shape-btn, .eraser-btn {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
             margin: 5px;
-            padding: 10px;
-            border: none;
-            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid black;
         }
+        .color-red { background: red; }
+        .color-blue { background: blue; }
+        .color-green { background: green; }
+        .color-yellow { background: yellow; }
+        .color-black { background: black; }
+        .eraser-btn { background: white; border: 2px dashed black; }
     </style>
 </head>
 <body>
     <div class="toolbar">
-        <input type="color" id="colorPicker" class="color-picker">
-        <button id="eraser" class="eraser">🧽 Erase</button>
-        <button id="circleStamp" class="stamp">🔵 Circle</button>
-        <button id="triangleStamp" class="stamp">🔺 Triangle</button>
-        <button id="squareStamp" class="stamp">⬛ Square</button>
+        <div class="color-btn color-red" onclick="changeColor('red')"></div>
+        <div class="color-btn color-blue" onclick="changeColor('blue')"></div>
+        <div class="color-btn color-green" onclick="changeColor('green')"></div>
+        <div class="color-btn color-yellow" onclick="changeColor('yellow')"></div>
+        <div class="color-btn color-black" onclick="changeColor('black')"></div>
+        <div class="eraser-btn" onclick="changeColor('white')">E</div>
+        <button class="shape-btn" onclick="setShape('circle')">⚫</button>
+        <button class="shape-btn" onclick="setShape('triangle')">▲</button>
+        <button class="shape-btn" onclick="setShape('square')">■</button>
     </div>
-    <canvas id="canvas" width="800" height="500"></canvas>
+    <canvas id="canvas" width="500" height="500"></canvas>
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        const colorPicker = document.getElementById("colorPicker");
-        const eraser = document.getElementById("eraser");
-        const circleStamp = document.getElementById("circleStamp");
-        const triangleStamp = document.getElementById("triangleStamp");
-        const squareStamp = document.getElementById("squareStamp");
-
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
         let drawing = false;
-        let currentColor = "#000000";
-        let stampMode = null;
+        let color = 'black';
+        let shape = null;
 
-        canvas.addEventListener("mousedown", (e) => {
-            if (stampMode) {
-                placeStamp(e.offsetX, e.offsetY, stampMode);
-                return;
-            }
-            drawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        });
-
-        canvas.addEventListener("mousemove", (e) => {
-            if (!drawing) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = 5;
-            ctx.lineCap = "round";
-            ctx.stroke();
-        });
-
-        canvas.addEventListener("mouseup", () => {
-            drawing = false;
-        });
-
-        colorPicker.addEventListener("input", (e) => {
-            currentColor = e.target.value;
-            stampMode = null;
-        });
-
-        eraser.addEventListener("click", () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        });
-
-        function placeStamp(x, y, shape) {
-            ctx.fillStyle = currentColor;
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            if (shape === "circle") {
-                ctx.arc(x, y, 20, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (shape === "triangle") {
-                ctx.moveTo(x, y - 20);
-                ctx.lineTo(x - 20, y + 20);
-                ctx.lineTo(x + 20, y + 20);
-                ctx.closePath();
-                ctx.fill();
-            } else if (shape === "square") {
-                ctx.fillRect(x - 20, y - 20, 40, 40);
-            }
-            ctx.stroke();
+        function changeColor(newColor) {
+            color = newColor;
+            shape = null;
         }
 
-        circleStamp.addEventListener("click", () => {
-            stampMode = "circle";
+        function setShape(newShape) {
+            shape = newShape;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            ctx.beginPath();
+            const x = e.offsetX;
+            const y = e.offsetY;
+            if (shape) {
+                ctx.fillStyle = color;
+                if (shape === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 20, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (shape === 'triangle') {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 20);
+                    ctx.lineTo(x - 20, y + 20);
+                    ctx.lineTo(x + 20, y + 20);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (shape === 'square') {
+                    ctx.fillRect(x - 20, y - 20, 40, 40);
+                }
+                drawing = false;
+            }
         });
 
-        triangleStamp.addEventListener("click", () => {
-            stampMode = "triangle";
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing || shape) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 5;
+            ctx.stroke();
         });
 
-        squareStamp.addEventListener("click", () => {
-            stampMode = "square";
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
         });
     </script>
 </body>
