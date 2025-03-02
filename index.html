@@ -1,74 +1,72 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchpad App</title>
+    <title>Sketchpad</title>
     <style>
         body {
             text-align: center;
-            font-family: Arial, sans-serif;
         }
         canvas {
             border: 2px solid black;
             cursor: crosshair;
         }
-        .tools {
-            margin: 10px;
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
         }
-        button {
+        .color-box {
+            width: 30px;
+            height: 30px;
             margin: 5px;
-            padding: 10px;
             cursor: pointer;
+            border: 2px solid black;
         }
     </style>
 </head>
 <body>
-
-    <h1>Sketchpad App</h1>
-    <canvas id="sketchpad" width="500" height="400"></canvas>
-
-    <div class="tools">
-        <button onclick="changeColor('black')">Hitam</button>
-        <button onclick="changeColor('red')">Merah</button>
-        <button onclick="changeColor('blue')">Biru</button>
-        <button onclick="changeColor('green')">Hijau</button>
-        <button onclick="changeColor('yellow')">Kuning</button>
-        <button onclick="changeColor('white')">Penghapus</button>
-        <button onclick="clearCanvas()">Hapus Semua</button>
+    <h1>Sketchpad</h1>
+    <div class="color-picker">
+        <div class="color-box" style="background-color: red;" onclick="changeColor('red')"></div>
+        <div class="color-box" style="background-color: blue;" onclick="changeColor('blue')"></div>
+        <div class="color-box" style="background-color: green;" onclick="changeColor('green')"></div>
+        <div class="color-box" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
+        <div class="color-box" style="background-color: black;" onclick="changeColor('black')"></div>
     </div>
-
+    <button onclick="clearCanvas()">Clear</button>
+    <canvas id="sketchpad" width="500" height="400"></canvas>
     <script>
-        const canvas = document.getElementById('sketchpad');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById("sketchpad");
+        const ctx = canvas.getContext("2d");
         let drawing = false;
-        let color = 'black';
-
-        canvas.addEventListener('mousedown', () => drawing = true);
-        canvas.addEventListener('mouseup', () => drawing = false);
-        canvas.addEventListener('mousemove', draw);
-
+        let color = "black";
+        
+        canvas.addEventListener("mousedown", () => drawing = true);
+        canvas.addEventListener("mouseup", () => drawing = false);
+        canvas.addEventListener("mousemove", draw);
+        
         function draw(event) {
             if (!drawing) return;
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
+            ctx.fillStyle = color;
             ctx.strokeStyle = color;
-
+            ctx.lineWidth = 5;
+            ctx.lineCap = "round";
             ctx.lineTo(event.offsetX, event.offsetY);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(event.offsetX, event.offsetY);
         }
-
+        
         function changeColor(newColor) {
             color = newColor;
             ctx.beginPath();
         }
-
+        
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     </script>
-
 </body>
 </html>
