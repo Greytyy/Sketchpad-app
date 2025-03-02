@@ -9,64 +9,69 @@
             text-align: center;
         }
         canvas {
-            border: 2px solid black;
+            border: 1px solid black;
             cursor: crosshair;
         }
-        .color-picker {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
+        .toolbar {
+            margin: 10px;
         }
-        .color-box {
-            width: 30px;
-            height: 30px;
+        button {
+            width: 40px;
+            height: 40px;
+            border: none;
             margin: 5px;
             cursor: pointer;
-            border: 2px solid black;
         }
     </style>
 </head>
 <body>
     <h1>Sketchpad</h1>
-    <div class="color-picker">
-        <div class="color-box" style="background-color: red;" onclick="changeColor('red')"></div>
-        <div class="color-box" style="background-color: blue;" onclick="changeColor('blue')"></div>
-        <div class="color-box" style="background-color: green;" onclick="changeColor('green')"></div>
-        <div class="color-box" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
-        <div class="color-box" style="background-color: black;" onclick="changeColor('black')"></div>
+    <div class="toolbar">
+        <button onclick="changeColor('black')" style="background: black;"></button>
+        <button onclick="changeColor('red')" style="background: red;"></button>
+        <button onclick="changeColor('blue')" style="background: blue;"></button>
+        <button onclick="changeColor('green')" style="background: green;"></button>
+        <button onclick="changeColor('yellow')" style="background: yellow;"></button>
+        <button onclick="clearCanvas()">🗑️</button>
     </div>
-    <button onclick="clearCanvas()">Clear</button>
-    <canvas id="sketchpad" width="500" height="400"></canvas>
+    <canvas id="sketchpad" width="600" height="400"></canvas>
+    
     <script>
-        const canvas = document.getElementById("sketchpad");
-        const ctx = canvas.getContext("2d");
+        const canvas = document.getElementById('sketchpad');
+        const ctx = canvas.getContext('2d');
         let drawing = false;
-        let color = "black";
-        
-        canvas.addEventListener("mousedown", () => drawing = true);
-        canvas.addEventListener("mouseup", () => drawing = false);
-        canvas.addEventListener("mousemove", draw);
-        
-        function draw(event) {
-            if (!drawing) return;
-            ctx.fillStyle = color;
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 5;
-            ctx.lineCap = "round";
-            ctx.lineTo(event.offsetX, event.offsetY);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.offsetX, event.offsetY);
+        let currentColor = 'black';
+
+        function changeColor(color) {
+            currentColor = color;
         }
-        
-        function changeColor(newColor) {
-            color = newColor;
-            ctx.beginPath();
-        }
-        
+
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            ctx.beginPath(); // Memulai jalur baru
+            ctx.moveTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 5;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            ctx.beginPath(); // Menghentikan jalur agar tidak tersambung terus-menerus
+        });
+
+        canvas.addEventListener('mouseout', () => {
+            drawing = false;
+        });
     </script>
 </body>
 </html>
